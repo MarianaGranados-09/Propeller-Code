@@ -70,8 +70,9 @@ Void main()
    Enable_interrupts(int_ext);
    PORTD=0x00;
    //Delay_ms(200);
+      regreso: 
       
-      do{
+      while(!input(pin_e2)){
       For(i=0; i<8; i++)
       {
          Letter = Fgetc(BTH);
@@ -89,7 +90,7 @@ Void main()
          wordreal[y] = word[y];
       }
       
-      fprintf(TTL, "[1er registro]La palabra es: \r\n");
+      fprintf(TTL, "[1er registro] La palabra es: \r\n");
       for(j=0;j<8;j++)
       {
          fprintf(TTL, "%c", wordreal[j]);
@@ -100,50 +101,61 @@ Void main()
     limpiar_palabra();
    
      
-   }while(!input(pin_e2));
-   //Rompe el ciclo while cuando el motor empieza a girar
-   //Aqui pregunta si hay una entrada de datos lista para ser recibida mediante kbhit
-   //y pregunta si el motor esta girando
-   if(kbhit(BTH) && input(pin_e2))
-   {
-      output_high(pin_a2);
-      do{
-      For(int h=0; h<8; h++)
-      {
-         Letter = Fgetc(BTH);
-         Delay_us(10);
-         Output_high(PIN_A1);
-         If(letter == '.')
-            Goto Imprimir1;
-         Word[h] = Letter;
-      }
-      
-      Imprimir1:
-      delay_us(50);
-      }while(input(pin_e2)); //Hacer el registro de la palabra solo cuando el motor este girando
-      
-      //Al romperse este ciclo, (al pararse el motor) entonces procede intercambiar la palabra
-      //word por wordreal, es decir, ahora si hace el registro de la palabra que se va a mostrar en 
-      //el propeller solo cuando el motor deja de girar.
-      for(int f=0;f<8;f++)
-      {
-         wordreal[f] = word[f];
-      }
-      fprintf(TTL, "[2do registro]La palabra es: \r\n");
-      for(int t=0;t<8;t++)
-      {
-         fprintf(TTL, "%c", wordreal[t]);
-      }
+   }
+   //Rompe el ciclo while cuando el motor empieza a girar (cuando el sensor de vibracion detecta movimiento)
    
+   //Si el motor se esta moviendo:
+   if(input(pin_e2))
+   {
+               do{
+            //Si se detecta una entrada de datos mediante kbhit()
+               if(kbhit(BTH))
+               {
+                  output_high(pin_a2);
+                  //"Guardar" la palabra que se detecta en la variable word
+                 
+                  For(int h=0; h<8; h++)
+                  {
+                     Letter = Fgetc(BTH);
+                     Delay_us(10);
+                     Output_high(PIN_A1);
+                     If(letter == '.')
+                        Goto Imprimir1;
+                     Word[h] = Letter;
+                  }
+                  
+                  Imprimir1:
+                  delay_us(50);
+                  output_low(pin_a2);
+               }
+               else //input(pin_e2) and kbhit()==0 (Kbhit doesn't register a new word coming in)
+               {
+                  fprintf(TTL, "El motor esta girando y no hay registro de palabra!!: \r\n");
+               
+               }
+                  }while(input(pin_e2)); //Se rompe este ciclo solo hasta que se detiene el motor
+   
+   
+                  fprintf(TTL, "El motor ha parado, ahora hara el intercambio de palabra\r\n");
+                  //Al romperse este ciclo, (al pararse el motor) entonces procede intercambiar la palabra
+                  //word por wordreal, es decir, ahora si hace el registro de la palabra que se va a mostrar en 
+                  //el propeller solo cuando el motor llega a un paro y no cuando esta girando.
+                  for(int f=0;f<8;f++)
+                  {
+                     wordreal[f] = word[f];
+                  }
+                  fprintf(TTL, "[2do registro] La palabra es: \r\n");
+                  for(int t=0;t<8;t++)
+                  {
+                     fprintf(TTL, "%c", wordreal[t]);
+                  }
+                  
+                  goto regreso;
+           
    }
    
-   else //input(pin_e2) and kbhit()==0 (Kbhit doesn't register a new word coming in)
-   {
-      fprintf(TTL, "El motor esta girando y no hay registro de palabra!!: \r\n");
-   
-   }
-   
-   
+   else
+      goto regreso;
    
 } //Main.
 
