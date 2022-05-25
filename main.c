@@ -1,3 +1,4 @@
+//Displays word on propeller, still needs some adjustments regarding saving the word and adding another. 
 #Include <18F4550.h>
 #Fuses HS,NOPROTECT, NOWDT, CPUDIV1, PLL1
 #Use Delay(Clock=8M)
