@@ -74,20 +74,23 @@ Void Texto()
 #int_rda
 void isr_rda()
 {
-   limpieza();
-   flag = 1;
-   for(int y=0;y<8;y++)
+   if(kbhit(BTH))
    {
-      letter = fgetc(BTH);
-      limpieza();
-      output_high(pin_a1);
-      delay_us(10);
-      if(letter == '.')
-        break;
-      word[y] = letter;
-     // delay_ms(50);
+         limpieza();
+         flag = 1;
+         for(int y=0;y<8;y++)
+         {
+            letter = fgetc(BTH);
+            limpieza();
+            output_high(pin_a1);
+            delay_us(10);
+            if(letter == '.')
+              break;
+            word[y] = letter;
+           // delay_ms(50);
+         }
+         limpieza();
    }
-   limpieza();
 
 }
 
@@ -107,7 +110,9 @@ Void main()
    delay_ms(50);
    while(TRUE)
    {
-      if(flag == 1)
+      
+      motorGiro();
+      if(flag == 1 && motor == 'a')
       {
          delay_ms(500);
          output_low(pin_a1);
@@ -117,7 +122,8 @@ Void main()
          {
             wordreal[b] = word[b];
          }
-         
+         delay_us(50);
+         limpiar_palabra();
          fprintf(TTL, "[1] La palabra que se mostrara en el propeller es: \r\n");
          for(int u=0;u<8;u++)
          {
@@ -126,6 +132,7 @@ Void main()
          delay_ms(200);
          flag = 0;
       }
+     // else if(flag == 1 && motor == 'e')
       //delay_ms(200);
   
    }
