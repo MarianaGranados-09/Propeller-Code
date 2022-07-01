@@ -5,4 +5,5 @@ An 8 character word is sent through bluetooth using an app (appinventor) and rea
 
 
 -Utilization of interrupts: int_rda and int_ext.
+
 -Utilization of serial communication RS232.
