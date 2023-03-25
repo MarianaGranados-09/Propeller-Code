@@ -9,5 +9,7 @@ An 8 character word is sent through bluetooth using an app (appinventor) and rea
 -Utilization of serial communication RS232.
 
 Image of the app interface
+
+
 ![imagen](https://user-images.githubusercontent.com/89766019/227702661-4ad3c254-81be-4d7e-81e8-b8b56f81cfe8.png)
 
